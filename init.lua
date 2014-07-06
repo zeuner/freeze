@@ -38,7 +38,7 @@ minetest.register_chatcommand("freeze", {
 				player:set_hp(1)
 			end
 			minetest.chat_send_all(param .. " was frozen by " .. name .. ".")
-			minetest.debug(param .. " was frozen at " .. minetest.pos_to_string(vector.round(player:getpos())))
+			print(param .. " was frozen at " .. minetest.pos_to_string(vector.round(player:getpos())))
 		end
 	end,
 })
@@ -56,11 +56,13 @@ minetest.register_chatcommand("unfreeze", {
 				minetest.auth_reload()
 				-- Detach player
 				player:set_detach()
-				_[param].entity:remove()
+				minetest.after(1, function()
+					_[param].entity:remove()
+					-- Clear the player info in the table
+					_[param] = nil
+				end)
 				minetest.chat_send_player(param, "You aren't frozen anymore.")
-				-- Clear the player info in the table
-				_[param] = nil
-				minetest.debug(param .. " was molten at " .. minetest.pos_to_string(vector.round(player:getpos())))
+				print(param .. " was molten at " .. minetest.pos_to_string(vector.round(player:getpos())))
 			end
 		end
 	end,
@@ -71,6 +73,6 @@ minetest.register_on_leaveplayer(function(player)
 	if _[name] ~= nil then
 		_[name].entity:remove()
 		_[name] = nil
-		minetest.debug(name .. " was molten because it left.")
+		print(name .. " was molten because it left.")
 	end
 end)
