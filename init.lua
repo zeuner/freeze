@@ -4,32 +4,18 @@
 -- Copyright (c) 2014 PenguinDad
 _ = {}
 
--- Register the entity
-minetest.register_entity("freeze:sticky", {
-	physical = false,
-	collisionbox = {0, 0, 0, 0, 0, 0},
-	is_visible = false,
-	on_activate = function(self, staticdata)
-		self.object:set_armor_groups({immortal=1})
-	end
-})
-
 minetest.register_chatcommand("freeze", {
 	params = "<name>",
-	description = "Freeze player <name>",
+	description = "Freeze a player",
 	privs = {privs=true},
 	func = function(name, param)
 		local player = minetest.get_player_by_name(param)
 		if player ~= nil and player:is_player() then
-			-- Add empty table for player related info
-			_[param] = {}
-			-- Add entity and attach player to it
-			_[param].entity = minetest.add_entity(player:getpos(), "freeze:sticky")
-			player:set_attach(_[param].entity, "", {x=0,y=0,z=0}, {x=0,y=0,z=0})
+			player:set_physics_override(0, 0, 1.5)
 			-- Revoke interact from player
-			_[param].privs = minetest.get_player_privs(param)
+			_[param] = minetest.get_player_privs(param)
 			local c = function(p) return p end
-			local tmp = c(_[param].privs)
+			local tmp = c(_[param])
 			tmp.interact = nil
 			minetest.set_player_privs(param, tmp)
 			minetest.auth_reload()
@@ -38,41 +24,27 @@ minetest.register_chatcommand("freeze", {
 				player:set_hp(1)
 			end
 			minetest.chat_send_all(param .. " was frozen by " .. name .. ".")
-			print(param .. " was frozen at " .. minetest.pos_to_string(vector.round(player:getpos())))
+			minetest.log("action", param .. " was frozen at " .. minetest.pos_to_string(vector.round(player:getpos())))
 		end
 	end,
 })
 
 minetest.register_chatcommand("unfreeze", {
 	params = "<name>",
-	description = "Unfreeze player <name>",
+	description = "Unfreeze a player",
 	privs = {privs=true},
 	func = function(name, param)
 		local player = minetest.get_player_by_name(param)
 		if player ~= nil and player:is_player() then
 			if _[param] ~= nil then
 				-- Regrant interact
-				minetest.set_player_privs(param, _[param].privs)
+				minetest.set_player_privs(param, _[param])
+				_[param] = nil
 				minetest.auth_reload()
-				-- Detach player
-				player:set_detach()
-				minetest.after(1, function()
-					_[param].entity:remove()
-					-- Clear the player info in the table
-					_[param] = nil
-				end)
+				player:set_physics_override(1, 1, 1)
 				minetest.chat_send_player(param, "You aren't frozen anymore.")
-				print(param .. " was molten at " .. minetest.pos_to_string(vector.round(player:getpos())))
+				minetest.log("action", param .. " was molten at " .. minetest.pos_to_string(vector.round(player:getpos())))
 			end
 		end
 	end,
 })
-
-minetest.register_on_leaveplayer(function(player)
-	local name = player:get_player_name()
-	if _[name] ~= nil then
-		_[name].entity:remove()
-		_[name] = nil
-		print(name .. " was molten because it left.")
-	end
-end)
