@@ -2,11 +2,27 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 -- Copyright (c) 2014 PenguinDad
+-- Copyright (c) 2017 Isidor Zeuner
+local S
+
+if minetest.get_modpath(
+	"intllib"
+) then
+	S = intllib.Getter(
+	)
+else
+	S = function(
+		translated
+	)
+		return translated
+	end
+end
+
 _ = {}
 
 minetest.register_chatcommand("freeze", {
 	params = "<name>",
-	description = "Freeze a player",
+	description = S("Freeze a player"),
 	privs = {privs=true},
 	func = function(name, param)
 		local player = minetest.get_player_by_name(param)
@@ -23,7 +39,7 @@ minetest.register_chatcommand("freeze", {
 			if minetest.setting_getbool("enable_damage") then
 				player:set_hp(1)
 			end
-			minetest.chat_send_all(param .. " was frozen by " .. name .. ".")
+			minetest.chat_send_all(string.format(S("%s was frozen by %s."), param, name))
 			minetest.log("action", param .. " was frozen at " .. minetest.pos_to_string(vector.round(player:getpos())))
 		end
 	end,
@@ -31,7 +47,7 @@ minetest.register_chatcommand("freeze", {
 
 minetest.register_chatcommand("unfreeze", {
 	params = "<name>",
-	description = "Unfreeze a player",
+	description = S("Unfreeze a player"),
 	privs = {privs=true},
 	func = function(name, param)
 		local player = minetest.get_player_by_name(param)
@@ -42,7 +58,7 @@ minetest.register_chatcommand("unfreeze", {
 				_[param] = nil
 				minetest.auth_reload()
 				player:set_physics_override(1, 1, 1)
-				minetest.chat_send_player(param, "You aren't frozen anymore.")
+				minetest.chat_send_player(param, S("You aren't frozen anymore."))
 				minetest.log("action", param .. " was molten at " .. minetest.pos_to_string(vector.round(player:getpos())))
 			end
 		end

@@ -1,0 +1,5 @@
+### init.lua
+Freeze a player =
+%s was frozen by %s. =
+Unfreeze a player =
+You aren't frozen anymore. =

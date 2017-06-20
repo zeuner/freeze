@@ -1,0 +1,5 @@
+### init.lua
+Freeze a player = Einen Spieler einfrieren
+%s was frozen by %s. = %s wurde von %s eingefroren.
+Unfreeze a player = Einen Spieler auftauen.
+You aren't frozen anymore. = Du bist nicht mehr eingefroren.
