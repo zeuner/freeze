@@ -24,6 +24,7 @@ minetest.register_chatcommand("freeze", {
 				player:set_hp(1)
 			end
 			minetest.chat_send_all(param .. " was frozen by " .. name .. ".")
+			minetest.chat_send_player(param, "You have been frozen.")
 			minetest.log("action", param .. " was frozen at " .. minetest.pos_to_string(vector.round(player:getpos())))
 		end
 	end,
@@ -42,6 +43,7 @@ minetest.register_chatcommand("unfreeze", {
 				_[param] = nil
 				minetest.auth_reload()
 				player:set_physics_override(1, 1, 1)
+				minetest.chat_send_all(param .. " was molten by " .. name .. ".")
 				minetest.chat_send_player(param, "You aren't frozen anymore.")
 				minetest.log("action", param .. " was molten at " .. minetest.pos_to_string(vector.round(player:getpos())))
 			end
