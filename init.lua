@@ -3,20 +3,14 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 -- Copyright (c) 2014 PenguinDad
 -- Copyright (c) 2017 Isidor Zeuner
-local S
+local MP = minetest.get_modpath(
+    minetest.get_current_modname(
+    )
+)
 
-if minetest.get_modpath(
-	"intllib"
-) then
-	S = intllib.Getter(
-	)
-else
-	S = function(
-		translated
-	)
-		return translated
-	end
-end
+local S, NS = dofile(
+    MP .. "/intllib.lua"
+)
 
 _ = {}
 
